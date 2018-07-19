@@ -422,4 +422,29 @@ public class QRCodeReaderView extends SurfaceView
                     viewSize, cameraPreviewSize);
         }
     }
+
+    public void switchCameraFace() {
+        releaseCamera();
+        int face = mCameraManager.getPreviewCameraId() == Camera.CameraInfo.CAMERA_FACING_FRONT
+                ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
+        openCamera(face);
+    }
+
+    private void openCamera(int cameraFace) {
+        try {
+            mCameraManager.setPreviewCameraId(cameraFace);
+            mCameraManager.openDriver(getHolder(), this.getWidth(), this.getHeight());
+            mCameraManager.setDisplayOrientation(getCameraDisplayOrientation());
+            mCameraManager.startPreview();
+            mCameraManager.setPreviewCallback(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void releaseCamera() {
+        mCameraManager.setPreviewCallback(null);
+        mCameraManager.stopPreview();
+        mCameraManager.closeDriver();
+    }
 }
